@@ -39,6 +39,18 @@ npx hardhat compile
 
 This command compiles the contract in your project.**Run this command every time some changes are made to the contract.**
 
+##Functions in the smart contract:
+
+1.name
+2.symbol
+3.decimal
+4.owner
+5.TotalSupply
+6.balances
+7.transfer
+8.approve
+9.transferFrom
+
 ##To run test cases
 
 In the root folder run commands:
