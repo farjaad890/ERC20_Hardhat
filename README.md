@@ -47,6 +47,37 @@ In the root folder run commands:
 npx hardhat test
 ```
 
+**Test cases :**
+1.Deployment
+
+\*set the correct owner address.
+
+\*set the correct name.
+
+\*set the correct symbol.
+
+\*set the correct Total supply.
+
+\*set the correct decimals.
+
+2.Transfer
+
+\*Transfer from one acount to a second acount.
+
+\*Sender donot have enough tokes to send and tries to send token.
+
+3.Approval
+
+\*An aproved acount sends token from one acount to another.
+
+\*An unaproved acount tries to send token to another acount.
+
+3.Event listening
+
+\*Listens to the Transfer event when transfer function is called.
+
+\*Listens to the approve event when an account is aproved .
+
 ##To run node
 
 ```shell

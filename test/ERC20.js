@@ -1,12 +1,11 @@
 const {
   loadFixture,
 } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
-const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const chaiAsPromised = require("chai-as-promised");
 
 describe("ERC20", async function () {
+  //function to deploy contract
   async function deploymentForeveryTestcase() {
     const [owner, acount1, acount2] = await ethers.getSigners();
     const ERC20 = await ethers.getContractFactory("ERC20");
@@ -14,6 +13,7 @@ describe("ERC20", async function () {
 
     return { erc20, owner, acount1, acount2 };
   }
+  //describing a test case for
   describe("Deployment", async function () {
     it("Then owner of the contract should be set correctly", async function () {
       const { owner, erc20 } = await loadFixture(deploymentForeveryTestcase);
@@ -52,11 +52,6 @@ describe("ERC20", async function () {
       );
       const initalOwnerbalance = await erc20.balances(owner.address);
       const initialAddressbalance = await erc20.balances(acount1.address);
-      //console.log("The initial token balance of owner ", initalOwnerbalance);
-      // console.log(
-      //   "The initial token balance of acount ",
-      //   initialAddressbalance
-      // );
       await erc20.transfer(acount1.address, 100);
       const balanceofOwner = await erc20.balances(owner.address);
       //console.log("The balance of owner", balanceofOwner);
@@ -90,21 +85,13 @@ describe("ERC20", async function () {
         deploymentForeveryTestcase
       );
       const initalOwnerbalance = await erc20.balances(owner.address);
-      //console.log("The initial balance of owner", initalOwnerbalance);
       const initialBalanceacount2 = await erc20.balances(acount2.address);
-      //console.log("Initial balance of acount 2 ", initialBalanceacount2);
       await erc20.approve(acount1.address, 50);
-      //console.log("Approved acount1 to transfer token");
-      const approval = await erc20.approved(owner.address, acount1.address);
-      //console.log("The aproved amount that owner has allowed to ", approval);
-      //console.log("The amount to be send ", 20);
       await erc20
         .connect(acount1)
         .transferFrom(acount2.address, owner.address, 20);
       const updatedOwnerbalance = await erc20.balances(owner.address);
-      //console.log("The updated owner balance ", updatedOwnerbalance);
       const updatedAcountBalance = await erc20.balances(acount2.address);
-      //console.log("Updated balance of receiver acount ", updatedAcountBalance);
       expect(updatedOwnerbalance).to.equal(initalOwnerbalance - BigInt(20));
       expect(updatedAcountBalance).to.equal(initialBalanceacount2 + BigInt(20));
     });
@@ -124,6 +111,26 @@ describe("ERC20", async function () {
       await expect(
         erc20.connect(acount1).transferFrom(acount2.address, owner.address, 100)
       ).to.be.revertedWith("exceeded the amount of approved token");
+    });
+  });
+  describe("Event handeling", async function () {
+    it("Should listen to the trasfer event emitted by the contract", async function () {
+      const { owner, erc20, acount1, acount2 } = await loadFixture(
+        deploymentForeveryTestcase
+      );
+      //const transferobject = await erc20.transfer(acount1.address, 100);
+      //console.log(transferobject);
+      await expect(erc20.transfer(acount1.address, 100))
+        .to.emit(erc20, "Transfer")
+        .withArgs(owner.address, acount1.address, 100);
+    });
+    it("Should liten event emitted by the contract when the an account is approved", async function () {
+      const { owner, erc20, acount1, acount2 } = await loadFixture(
+        deploymentForeveryTestcase
+      );
+      expect(erc20.approve(acount1.address, 50))
+        .to.emit(erc20, "Approval")
+        .withArgs(owner.address, acount1.address, 50);
     });
   });
 });
